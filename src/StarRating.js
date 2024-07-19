@@ -25,7 +25,9 @@ export default function StarRating({
   function handleRating(rating, rateMessage) {
     setRating(rating);
     setRateMessage(rateMessage);
+
     onSetRating(rating);
+
     let rateValue = (rating / maxRating) * 100;
     console.log(rateValue);
     if (rateValue <= 30) {
