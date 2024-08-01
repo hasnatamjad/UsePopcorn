@@ -47,12 +47,19 @@ const tempWatchedData = [
   },
 ];
 
+// http://www.omdbapi.com/?i=tt3896198&apikey=b69222f7
+
+const movieKey = "b69222f7";
 const average = (arr) =>
   arr.reduce((acc, cur, i, arr) => acc + cur / arr.length, 0);
 
 export default function App() {
   const [movies, setMovies] = useState(tempMovieData);
   const [watched, setWatched] = useState(tempWatchedData);
+
+  // fetch(`http://www.omdbapi.com/?apikey=${movieKey}&`)
+  //   .then((res) => res.json())
+  //   .then((data) => setMovies(data.Search));
 
   return (
     <>
