@@ -57,13 +57,18 @@ export default function App() {
   const [movies, setMovies] = useState([]);
   const [watched, setWatched] = useState(tempWatchedData);
 
+  const query = "love";
   useEffect(function () {
-    fetch(`http://www.omdbapi.com/?apikey=${movieKey}&s=love`)
-      .then((res) => res.json())
-      .then((data) => setMovies(data.Search));
+    async function fetchMovies() {
+      const res = await fetch(
+        `http://www.omdbapi.com/?apikey=${movieKey}&s=${query}`
+      );
+      const data = await res.json();
+      setMovies(data.Search);
+      console.log(movies);
+    }
+    fetchMovies();
   }, []);
-
-  console.log(movies);
 
   return (
     <>
