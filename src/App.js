@@ -59,7 +59,7 @@ export default function App() {
   const [isLoading, setIsloading] = useState(false);
   const [error, setError] = useState("");
 
-  const query = "avenger";
+  const query = "education";
   useEffect(function () {
     async function fetchMovies() {
       try {
@@ -172,10 +172,10 @@ function Box({ children }) {
 }
 
 function MoviesList({ movies }) {
-  // const filterWords = ["sex", "drug", "porn"];
-  // const [showMovie, setShowMovie] = useState(false);
+  const filterWords = ["sex", "drug", "porn"];
+  const [showMovie, setShowMovie] = useState(false);
 
-  // const [filteredMovies, setFilteredMovies] = useState([]);
+  const [filteredMovies, setFilteredMovies] = useState([]);
 
   // useEffect(() => {
   //   const filtered = movies
@@ -186,20 +186,26 @@ function MoviesList({ movies }) {
   //     .map((movie) => movie.imdbID);
 
   //   setFilteredMovies(filtered);
-  // }, [movies, filterWords]);
+  // }, [movies, filterWords, filteredMovies, setFilteredMovies]);
 
   return (
     <ul className="list">
       {movies?.map((movie) => (
         <li key={movie.imdbID}>
-          <img src={movie.Poster} alt={`${movie.Title} poster`} />
-          <h3>{movie.Title}</h3>
-          <div>
-            <p>
-              <span>🗓</span>
-              <span>{movie.Year}</span>
-            </p>
-          </div>
+          {showMovie ? (
+            <span>Explicit Content🛑 Content is Hidden</span>
+          ) : (
+            <>
+              <img src={movie.Poster} alt={`${movie.Title} poster`} />
+              <h3>{movie.Title}</h3>
+              <div>
+                <p>
+                  <span>🗓</span>
+                  <span>{movie.Year}</span>
+                </p>
+              </div>
+            </>
+          )}
         </li>
       ))}
     </ul>
