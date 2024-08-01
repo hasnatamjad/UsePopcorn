@@ -57,18 +57,28 @@ export default function App() {
   const [movies, setMovies] = useState([]);
   const [watched, setWatched] = useState(tempWatchedData);
   const [isLoading, setIsloading] = useState(false);
+  const [error, setError] = useState("");
 
-  const query = "love";
+  const query = "avenger";
   useEffect(function () {
     async function fetchMovies() {
-      setIsloading(true);
-      const res = await fetch(
-        `http://www.omdbapi.com/?apikey=${movieKey}&s=${query}`
-      );
-      const data = await res.json();
-      setMovies(data.Search);
-      console.log(movies);
-      setIsloading(false);
+      try {
+        setIsloading(true);
+        const res = await fetch(
+          `http://www.omdbapi.com/?apikey=${movieKey}&s=${query}`
+        );
+        if (!res.ok)
+          throw new Error("Something went wrong while loading movie");
+
+        const data = await res.json();
+        if (data.Response === "False") throw new Error("Movie Not Found🚫");
+        setMovies(data.Search);
+      } catch (err) {
+        console.error(err.message);
+        setError(err.message);
+      } finally {
+        setIsloading(false);
+      }
     }
     fetchMovies();
   }, []);
@@ -77,7 +87,12 @@ export default function App() {
     <>
       <Navbar movies={movies} />
       <Main>
-        <Box>{isLoading ? <Loader /> : <MoviesList movies={movies} />}</Box>
+        <Box>
+          {/* {isLoading ? <Loader /> : <MoviesList movies={movies} />} */}
+          {isLoading && <Loader />}
+          {!isLoading && !error && <MoviesList movies={movies} />}
+          {error && <ErrorMessage message={error} />}
+        </Box>
 
         <Box>
           <Summary watched={watched} />
@@ -85,6 +100,14 @@ export default function App() {
         </Box>
       </Main>
     </>
+  );
+}
+
+function ErrorMessage({ message }) {
+  return (
+    <p className="error">
+      <span>⛔</span> {message}
+    </p>
   );
 }
 
@@ -149,6 +172,22 @@ function Box({ children }) {
 }
 
 function MoviesList({ movies }) {
+  // const filterWords = ["sex", "drug", "porn"];
+  // const [showMovie, setShowMovie] = useState(false);
+
+  // const [filteredMovies, setFilteredMovies] = useState([]);
+
+  // useEffect(() => {
+  //   const filtered = movies
+  //     .filter((item) => {
+  //       const title = item.Title.toLowerCase();
+  //       return filterWords.some((word) => title.split(" ").includes(word));
+  //     })
+  //     .map((movie) => movie.imdbID);
+
+  //   setFilteredMovies(filtered);
+  // }, [movies, filterWords]);
+
   return (
     <ul className="list">
       {movies?.map((movie) => (
