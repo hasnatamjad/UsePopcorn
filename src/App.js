@@ -60,7 +60,15 @@ export default function App() {
   const [error, setError] = useState("");
   const [query, setQuery] = useState("");
 
-  const temQuery = "avenger";
+  const [selectedId, setSelectedId] = useState(null);
+
+  function handleSelectedMovie(id) {
+    setSelectedId((selectedId) => (id === selectedId ? null : id));
+  }
+
+  function closeMovie() {
+    setSelectedId(null);
+  }
   useEffect(
     function () {
       async function fetchMovies() {
@@ -84,7 +92,7 @@ export default function App() {
         }
       }
 
-      if (query.length < 3) {
+      if (!query.length) {
         setMovies([]);
         setError("");
         return;
@@ -102,13 +110,25 @@ export default function App() {
         <Box>
           {/* {isLoading ? <Loader /> : <MoviesList movies={movies} />} */}
           {isLoading && <Loader />}
-          {!isLoading && !error && <MoviesList movies={movies} />}
+          {!isLoading && !error && (
+            <MoviesList
+              movies={movies}
+              onSelectedMovie={handleSelectedMovie}
+              onCloseMovie={closeMovie}
+            />
+          )}
           {error && <ErrorMessage message={error} />}
         </Box>
 
         <Box>
-          <Summary watched={watched} />
-          <WatchedList watched={watched} />
+          {selectedId ? (
+            <MovieDetails selectedId={selectedId} onCloseMovie={closeMovie} />
+          ) : (
+            <>
+              <Summary watched={watched} />
+              <WatchedList watched={watched} />
+            </>
+          )}
         </Box>
       </Main>
     </>
@@ -181,7 +201,7 @@ function Box({ children }) {
   );
 }
 
-function MoviesList({ movies }) {
+function MoviesList({ movies, onSelectedMovie, onCloseMovie }) {
   const filterWords = ["sex", "drug", "porn"];
   const [showMovie, setShowMovie] = useState(false);
 
@@ -201,24 +221,46 @@ function MoviesList({ movies }) {
   return (
     <ul className="list">
       {movies?.map((movie) => (
-        <li key={movie.imdbID}>
-          {showMovie ? (
-            <span>Explicit Content🛑 Content is Hidden</span>
-          ) : (
-            <>
-              <img src={movie.Poster} alt={`${movie.Title} poster`} />
-              <h3>{movie.Title}</h3>
-              <div>
-                <p>
-                  <span>🗓</span>
-                  <span>{movie.Year}</span>
-                </p>
-              </div>
-            </>
-          )}
-        </li>
+        <Movie
+          movie={movie}
+          key={movie.imdbID}
+          onSelectedMovie={onSelectedMovie}
+          onCloseMovie={onCloseMovie}
+        />
       ))}
     </ul>
+  );
+}
+
+function Movie({ movie, showMovie, onSelectedMovie, onCloseMovie }) {
+  return (
+    <li onClick={() => onSelectedMovie(movie.imdbID)}>
+      {showMovie ? (
+        <span>Explicit Content🛑 Content is Hidden</span>
+      ) : (
+        <>
+          <img src={movie.Poster} alt={`${movie.Title} poster`} />
+          <h3>{movie.Title}</h3>
+          <div>
+            <p>
+              <span>🗓</span>
+              <span>{movie.Year}</span>
+            </p>
+          </div>
+        </>
+      )}
+    </li>
+  );
+}
+
+function MovieDetails({ selectedId, onCloseMovie }) {
+  return (
+    <div className="details">
+      <button className="btn-back" onClick={onCloseMovie}>
+        &larr;
+      </button>
+      {selectedId}
+    </div>
   );
 }
 
