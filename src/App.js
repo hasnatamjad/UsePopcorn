@@ -58,34 +58,46 @@ export default function App() {
   const [watched, setWatched] = useState(tempWatchedData);
   const [isLoading, setIsloading] = useState(false);
   const [error, setError] = useState("");
+  const [query, setQuery] = useState("");
 
-  const query = "education";
-  useEffect(function () {
-    async function fetchMovies() {
-      try {
-        setIsloading(true);
-        const res = await fetch(
-          `http://www.omdbapi.com/?apikey=${movieKey}&s=${query}`
-        );
-        if (!res.ok)
-          throw new Error("Something went wrong while loading movie");
+  const temQuery = "avenger";
+  useEffect(
+    function () {
+      async function fetchMovies() {
+        try {
+          setIsloading(true);
+          setError("");
+          const res = await fetch(
+            `http://www.omdbapi.com/?apikey=${movieKey}&s=${query}`
+          );
+          if (!res.ok)
+            throw new Error("Something went wrong while loading movie");
 
-        const data = await res.json();
-        if (data.Response === "False") throw new Error("Movie Not Found🚫");
-        setMovies(data.Search);
-      } catch (err) {
-        console.error(err.message);
-        setError(err.message);
-      } finally {
-        setIsloading(false);
+          const data = await res.json();
+          if (data.Response === "False") throw new Error("Movie Not Found🚫");
+          setMovies(data.Search);
+        } catch (err) {
+          console.error(err.message);
+          setError(err.message);
+        } finally {
+          setIsloading(false);
+        }
       }
-    }
-    fetchMovies();
-  }, []);
+
+      if (query.length < 3) {
+        setMovies([]);
+        setError("");
+        return;
+      } else {
+        fetchMovies();
+      }
+    },
+    [query]
+  );
 
   return (
     <>
-      <Navbar movies={movies} />
+      <Navbar movies={movies} query={query} setQuery={setQuery} />
       <Main>
         <Box>
           {/* {isLoading ? <Loader /> : <MoviesList movies={movies} />} */}
@@ -130,9 +142,7 @@ function Logo() {
 }
 
 // Navbar Component
-function Navbar({ movies }) {
-  const [query, setQuery] = useState("");
-
+function Navbar({ movies, query, setQuery }) {
   return (
     <div>
       <nav className="nav-bar">
