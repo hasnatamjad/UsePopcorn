@@ -254,8 +254,9 @@ function Movie({ movie, showMovie, onSelectedMovie, onCloseMovie }) {
   );
 }
 
-function MovieDetails({ selectedId, onCloseMovie, isLoading }) {
+function MovieDetails({ selectedId, onCloseMovie }) {
   const [movieData, setMovieData] = useState({});
+  const [movieDataLoading, setMovieDataLoading] = useState(false);
 
   const {
     Title: title,
@@ -272,12 +273,13 @@ function MovieDetails({ selectedId, onCloseMovie, isLoading }) {
   useEffect(
     function () {
       async function getMovieDetails() {
+        setMovieDataLoading(true);
         const res = await fetch(
           `http://www.omdbapi.com/?apikey=${movieKey}&i=${selectedId}`
         );
         const data = await res.json();
         setMovieData(data);
-        console.log(data);
+        setMovieDataLoading(false);
       }
       getMovieDetails();
     },
@@ -285,42 +287,45 @@ function MovieDetails({ selectedId, onCloseMovie, isLoading }) {
   );
   return (
     <div className="details">
-      {}
-      <>
-        <header>
-          <img src={poster} alt={`poster of ${title}`} />
-          <div className="details-overview">
-            <h2>{title}</h2>
+      {movieDataLoading ? (
+        <Loader />
+      ) : (
+        <>
+          <header>
+            <img src={poster} alt={`poster of ${title}`} />
+            <div className="details-overview">
+              <h2>{title}</h2>
+              <p>
+                {released} &bull; {runtime}
+              </p>
+              <p>{genre}</p>
+              <p>
+                <span>⭐</span>
+                {imdbRating} IMDB Rating{" "}
+              </p>
+            </div>
+            <button className="btn-back" onClick={onCloseMovie}>
+              &larr;
+            </button>
+          </header>
+          <section>
+            <div className="rating">
+              <StarRating maxRating={10} size="20" />
+            </div>
             <p>
-              {released} &bull; {runtime}
+              <em>{plot}</em>
             </p>
-            <p>{genre}</p>
             <p>
-              <span>⭐</span>
-              {imdbRating} IMDB Rating{" "}
+              <strong>Staring: </strong>
+              {actors}
             </p>
-          </div>
-          <button className="btn-back" onClick={onCloseMovie}>
-            &larr;
-          </button>
-        </header>
-        <section>
-          <div className="rating">
-            <StarRating maxRating={10} size="20" />
-          </div>
-          <p>
-            <em>{plot}</em>
-          </p>
-          <p>
-            <strong>Staring: </strong>
-            {actors}
-          </p>
-          <p>
-            <strong>Director: </strong>
-            {director}
-          </p>
-        </section>
-      </>
+            <p>
+              <strong>Director: </strong>
+              {director}
+            </p>
+          </section>
+        </>
+      )}
     </div>
   );
 }
