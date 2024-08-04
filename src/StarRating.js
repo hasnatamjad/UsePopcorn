@@ -27,17 +27,16 @@ export default function StarRating({
   size = "24",
   messages = [],
   defaultRating = 0,
-  onSetRating,
 }) {
   const [rating, setRating] = useState(defaultRating);
   const [tempRating, setTempRating] = useState(0);
   const [rateMessage, setRateMessage] = useState("");
 
   function handleRating(rating, rateMessage) {
-    setRating(rating);
+    // onSetRating(rating);
     setRateMessage(rateMessage);
 
-    onSetRating(rating);
+    // onSetRating(rating);
 
     let rateValue = (rating / maxRating) * 100;
     console.log(rateValue);

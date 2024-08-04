@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import StarRating from "./StarRating";
 
 const tempMovieData = [
   {
@@ -253,13 +254,73 @@ function Movie({ movie, showMovie, onSelectedMovie, onCloseMovie }) {
   );
 }
 
-function MovieDetails({ selectedId, onCloseMovie }) {
+function MovieDetails({ selectedId, onCloseMovie, isLoading }) {
+  const [movieData, setMovieData] = useState({});
+
+  const {
+    Title: title,
+    Poster: poster,
+    Year: year,
+    Runtime: runtime,
+    imdbRating,
+    Plot: plot,
+    Released: released,
+    Actors: actors,
+    Director: director,
+    Genre: genre,
+  } = movieData;
+  useEffect(
+    function () {
+      async function getMovieDetails() {
+        const res = await fetch(
+          `http://www.omdbapi.com/?apikey=${movieKey}&i=${selectedId}`
+        );
+        const data = await res.json();
+        setMovieData(data);
+        console.log(data);
+      }
+      getMovieDetails();
+    },
+    [selectedId]
+  );
   return (
     <div className="details">
-      <button className="btn-back" onClick={onCloseMovie}>
-        &larr;
-      </button>
-      {selectedId}
+      {}
+      <>
+        <header>
+          <img src={poster} alt={`poster of ${title}`} />
+          <div className="details-overview">
+            <h2>{title}</h2>
+            <p>
+              {released} &bull; {runtime}
+            </p>
+            <p>{genre}</p>
+            <p>
+              <span>⭐</span>
+              {imdbRating} IMDB Rating{" "}
+            </p>
+          </div>
+          <button className="btn-back" onClick={onCloseMovie}>
+            &larr;
+          </button>
+        </header>
+        <section>
+          <div className="rating">
+            <StarRating maxRating={10} size="20" />
+          </div>
+          <p>
+            <em>{plot}</em>
+          </p>
+          <p>
+            <strong>Staring: </strong>
+            {actors}
+          </p>
+          <p>
+            <strong>Director: </strong>
+            {director}
+          </p>
+        </section>
+      </>
     </div>
   );
 }
