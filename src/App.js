@@ -161,6 +161,10 @@ function Logo() {
 
 // Navbar Component
 function Navbar({ movies, query, setQuery }) {
+  useEffect(function () {
+    const el = document.querySelector(".search");
+    el.focus();
+  }, []);
   return (
     <div>
       <nav className="nav-bar">
